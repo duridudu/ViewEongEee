@@ -98,7 +98,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     if (user==null){
                         log.info("로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                        user = new User(email, oAuth2Attribute.getName(), oAuth2Attribute.getPicture(), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
 
                     }
