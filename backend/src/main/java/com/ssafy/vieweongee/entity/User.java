@@ -1,9 +1,10 @@
 package com.ssafy.vieweongee.entity;
+
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,30 +12,32 @@ import java.util.List;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
-public class User {
+//@ToString
+@DynamicUpdate
+public class User{
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30)
+    @Column()
+    private String name;
+    @Column(length = 30,nullable = false)
     private String email;
+    @Column(nullable = false)
+    private String picture;
     @Column(length = 16)
     private String password;
+
     @Column(length = 10)
     private String social_login;
 
-    @Column(columnDefinition = "TINYINT(1)")
     private String social_token;
 
     @Column(length = 10)
-
-    @NotNull
     private String nickname;
-    @ColumnDefault("false")
-    @Column(columnDefinition = "TINYINT(1)")
-    private boolean authority;
     private String jwt_token;
+
 
     @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
     private List<Notice> notices = new ArrayList<>();
@@ -61,14 +64,15 @@ public class User {
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String password, String social_login, String social_token, String nickname, boolean authority, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
+    public User(Long id, String name, String picture,String email, String password, String social_login, String social_token, String nickname, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
         this.id = id;
+        this.name = name;
         this.email = email;
+        this.picture=picture;
         this.password = password;
         this.social_login = social_login;
         this.social_token = social_token;
         this.nickname = nickname;
-        this.authority = authority;
         this.jwt_token = jwt_token;
         this.notices = notices;
         this.alarms = alarms;
@@ -78,5 +82,12 @@ public class User {
         this.scorecards = scorecards;
         this.comments = comments;
         this.replies = replies;
+    }
+
+    public User(String email, String name, String picture, String social_login) {
+        this.email = email;
+        this.name = name;
+        this.picture = picture;
+        this.social_login=social_login;
     }
 }

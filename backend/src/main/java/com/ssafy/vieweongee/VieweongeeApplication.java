@@ -8,5 +8,4 @@ public class VieweongeeApplication {
     public static void main(String[] args) {
         SpringApplication.run(VieweongeeApplication.class, args);
     }
-
 }
