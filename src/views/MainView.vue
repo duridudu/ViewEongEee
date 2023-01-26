@@ -2,28 +2,28 @@
   <div class="main">
     <MyHeader></MyHeader>
     <MainCenter />
+    <MainCardList />
     <!--<SearchBar /> -->
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-import MainCenter from '@/components/mainpage/MainCenter.vue';
-import SearchBar from '@/components/common/SearchBar.vue';
-import MyHeader from '@/components/common/MyHeader.vue';
+import { defineComponent } from "vue";
+import MainCenter from "@/components/mainpage/MainCenter.vue";
+import MainCardList from "@/components/mainpage/MainCardList.vue";
+import MyHeader from "@/components/common/MyHeader.vue";
 
 export default defineComponent({
-  name: 'MainView',
+  name: "MainView",
   components: {
     MyHeader,
-    MainCenter
+    MainCenter,
+    MainCardList,
   },
-  
-}) 
+});
 </script>
 <style scoped>
-.MainCenter{
+.MainCenter {
   text-align: center;
 }
 </style>

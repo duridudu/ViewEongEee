@@ -1,23 +1,52 @@
 <template>
-    <div class="CardList">
-        {CardList.map((it) => (
-          <MainCardItem key={it.id} {...it}></MainCardItem>
-        ))}
+  <div class="card-list">
+    <div className="card-div">
+      <div>카드리스트</div>
     </div>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import MainCardItem from "@/components/mainpage/MainCardItem.vue";
+import { defineComponent } from "vue";
+// import MainCardItem from "@/components/mainpage/MainCardItem.vue";
 export default defineComponent({
-    name: "MainCardList",
-    components: {
-        MainCardItem
-    },
-    props: {
-        // CardList
-    }
-})
+  name: "MainCardList",
+  components: {
+    // MainCardItem,
+  },
+  props: {
+    // CardList
+  },
+});
 </script>
 <style scoped>
+.card-list {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+.card-contents {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px 10px 30px;
+}
+.card-div {
+  font-family: "nexonlv1";
+  width: 300px;
+  margin: 30px;
+  padding: 20px;
+  border: 4px solid rgba(227, 232, 252, 0.5);
+  border-radius: 10px;
+  box-shadow: 1px 10px 15px 1px rgb(221, 221, 221);
+}
 
-</style>>
+.card-div:hover {
+  background: rgba(210, 218, 255, 0.6);
+  transition: all 200ms 0s ease-in;
+  transform: scale(1.04);
+  border: 4px solid rgba(227, 232, 252, 0.2);
+}
+
+.content-type {
+  color: #555454;
+}
+</style>
