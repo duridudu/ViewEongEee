@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-main class="main-box">
-      <p class="text-h6 mb-3">싸피 비전공자 면접스터디 구해요</p>
+      <h2 class="text-h6 mb-3">싸피 비전공자 면접스터디 구해요</h2>
       <el-row>
         <el-col :span="20">
           <p>higildong | 2023.01.05</p>
@@ -62,6 +62,7 @@ export default {
 <style scoped>
 .el-container {
   margin: 0 auto;
+  margin-top: 5%;
   width: 45%;
 }
 .el-main {
