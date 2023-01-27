@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Message, Lock, User } from "@element-plus/icons-vue";
+import { Message, Lock} from "@element-plus/icons-vue";
 export default defineComponent({
   components: {
     Message,
