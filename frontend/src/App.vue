@@ -8,7 +8,7 @@ a {
   color: #3f67d3;
 }
 
-/* div 정가운데 배치 */
+/* div 가운데 배치 */
 .div-center {
   display: flex;
   justify-content: center;
