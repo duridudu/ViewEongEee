@@ -6,7 +6,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "main",
-    component: StudyView,
+    component: MainView,
   },
   {
     path: "/study",
