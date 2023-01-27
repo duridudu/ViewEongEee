@@ -1,7 +1,7 @@
 <template>
   <div class="card-list">
     <div v-for="(data, index) in cardData" :key="index" class="card-div">
-      <div>(인원수)</div>
+      <div>(인원 수)</div>
       <div class="title">{{ data.title }}</div>
       <div class="card-contents">
         <div>기업</div>
@@ -44,7 +44,7 @@ export default defineComponent({
         title: "유플러스 백엔드 면접",
         ent: "유플러스",
         dept: "백엔드",
-        date: "2023.01.10 11:00",
+        date: "2023.01.10 12:00",
       },
     ];
     return { cardData };
