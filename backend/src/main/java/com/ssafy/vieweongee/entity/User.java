@@ -1,12 +1,20 @@
 package com.ssafy.vieweongee.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -14,7 +22,11 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@ToString
 @DynamicUpdate
-public class User{
+public class User implements UserDetails{
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,7 +76,8 @@ public class User{
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    public User(Long id, String name, String picture,String email, String password, String social_login, String social_token, String nickname, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
+    public User(List<String> roles, Long id, String name, String picture,String email, String password, String social_login, String social_token, String nickname, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
+        this.roles=roles;
         this.id = id;
         this.name = name;
         this.email = email;
@@ -84,10 +97,44 @@ public class User{
         this.replies = replies;
     }
 
-    public User(String email, String name, String picture, String social_login) {
+    public User(String email, String name, String nickname, String picture, String social_login) {
         this.email = email;
         this.name = name;
+        this.nickname=nickname;
         this.picture = picture;
         this.social_login=social_login;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
 }

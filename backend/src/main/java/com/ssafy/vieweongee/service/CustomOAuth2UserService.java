@@ -1,8 +1,9 @@
 package com.ssafy.vieweongee.service;
 
-import com.ssafy.vieweongee.entity.StudyRepository;
+import com.ssafy.vieweongee.controller.SocialUserController;
+import com.ssafy.vieweongee.repository.StudyRepository;
 import com.ssafy.vieweongee.entity.User;
-import com.ssafy.vieweongee.entity.UserRepository;
+import com.ssafy.vieweongee.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,7 +62,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 if (findMember==null)  {
                     log.info("카카오 로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
-                    user = new User(email, kakaosAccount.get("nickname").toString(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
+                    user = new User(email, kakaosAccount.get("nickname").toString(), SocialUserController.NickName(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
                     userRepository.save(user);
                 }
                 else {
@@ -69,7 +70,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     if (user==null){
                         log.info("카카오 로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email, kakaosAccount.get("nickname").toString(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
+                        user = new User(email, kakaosAccount.get("nickname").toString(), SocialUserController.NickName(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
                     }
                         log.info("카카오 로그인 기록이 있습니당");
@@ -78,6 +79,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 }
             }catch (RuntimeException e){
                 throw new RuntimeException();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         else if (social.equals("naver")){
@@ -89,7 +92,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 if (findMember==null) {
                     log.info("로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
-                    user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                    user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"),SocialUserController.NickName(), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
                     userRepository.save(user);
                 }
                 else{
@@ -97,14 +100,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     log.info("나 네이버야.......{}", user);
                     if (user==null){
                         log.info("로그인이 처음! 회원으로 등록");
+                        String nickname=SocialUserController.NickName();
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email, oAuth2Attribute.getName(), oAuth2Attribute.getPicture(), oAuth2Attribute.getSocial_login());
+                        log.info("서비스 패키지에서의 닉네임은?!!!! {}",nickname );
+                        user = new User(email, oAuth2Attribute.getName(), nickname,oAuth2Attribute.getPicture(), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
 
                     }
                     log.info("로그인 기록이 있습니당");
                 }
-            }catch (RuntimeException e){
+            }catch (Exception e){
                 throw new RuntimeException();
             }
         }else{
@@ -117,7 +122,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     if (findMember==null) {
                         log.info("로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                        user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), SocialUserController.NickName(),oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
                     }
                     else{
@@ -126,13 +131,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         if (user==null){
                             log.info("로그인이 처음! 회원으로 등록");
                             log.info("{}", oAuth2Attribute.getAttributeKey());
-                            user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                            user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), SocialUserController.NickName(),oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
                             userRepository.save(user);
                         }
                         log.info("로그인 기록이 있습니당");
                     }
                 }
-                catch (RuntimeException e){
+                catch (Exception e){
                     throw new RuntimeException();
                 }
             }

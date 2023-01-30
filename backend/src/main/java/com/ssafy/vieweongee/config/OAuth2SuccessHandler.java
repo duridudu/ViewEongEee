@@ -2,7 +2,7 @@ package com.ssafy.vieweongee.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.vieweongee.entity.User;
-import com.ssafy.vieweongee.entity.UserRepository;
+import com.ssafy.vieweongee.repository.UserRepository;
 import com.ssafy.vieweongee.model.UserRequestMapper;
 import com.ssafy.vieweongee.service.Token;
 import com.ssafy.vieweongee.service.TokenService;

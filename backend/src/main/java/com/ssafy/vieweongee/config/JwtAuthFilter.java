@@ -1,7 +1,6 @@
 package com.ssafy.vieweongee.config;
 
 import com.ssafy.vieweongee.entity.User;
-import com.ssafy.vieweongee.entity.UserRepository;
 import com.ssafy.vieweongee.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +27,23 @@ public class JwtAuthFilter extends GenericFilterBean {
 //    private final UserRepository userRepository;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String token =((HttpServletRequest) request).getHeader("Auth");
+//        String token =((HttpServletRequest) request).getHeader("Auth");
 //        String token=getJwt();
+        String token=tokenService.resolveToken((HttpServletRequest) request);
 //        String token="JWT";
         log.info("{}", token);
-
+        // null 아니고 유효한 토큰인지 확인
         if (token != null && tokenService.verifyToken(token)) {
-            String email = tokenService.getUid(token);
-            UserRepository userRepository = null;
-            User userDto = User.builder()
-                    .email(email)
-                    .name(userRepository.getNameByEmail(email))
-                    .picture(userRepository.getPictureByEmail(email)).build();
-            Authentication auth = getAuthentication(userDto);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            Authentication authentication=tokenService.getAuthenticatioin(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            String email = tokenService.getUid(token);
+//            UserRepository userRepository = null;
+//            User userDto = User.builder()
+//                    .email(email)
+//                    .name(userRepository.getNameByEmail(email))
+//                    .picture(userRepository.getPictureByEmail(email)).build();
+//            Authentication auth = getAuthentication(userDto);
+//            SecurityContextHolder.getContext().setAuthentication(auth);
         }
         chain.doFilter(request, response);
     }

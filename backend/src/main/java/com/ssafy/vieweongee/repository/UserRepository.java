@@ -1,5 +1,6 @@
-package com.ssafy.vieweongee.entity;
+package com.ssafy.vieweongee.repository;
 
+import com.ssafy.vieweongee.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -37,12 +38,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User u SET u.social_token=:token WHERE u.email=:email")
     void updateRefreshToken(@Param("email") String email, @Param("token") String token);
-
 //    @Transactional
 //    @Modifying
 //    @Query("UPDATE User u SET u.social_login=:socail_login WHERE u.email=:email")
 //    void updateSocialName(@Param("email") String email, @Param("social") String social_login);
     User findUserByEmail(String email);
+
+
+    boolean existsByNickname(String nickname);
+
+    Optional<User> findByEmail(String email);
 
 
 }
