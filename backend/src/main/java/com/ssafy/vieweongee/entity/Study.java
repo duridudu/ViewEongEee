@@ -2,9 +2,11 @@ package com.ssafy.vieweongee.entity;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -123,8 +125,5 @@ public class Study {
         this.progresses = progresses;
         this.scorecards = scorecards;
         this.comments = comments;
-    }
-
-    public Study(User user) {
     }
 }

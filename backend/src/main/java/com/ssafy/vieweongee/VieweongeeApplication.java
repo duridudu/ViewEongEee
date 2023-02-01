@@ -2,10 +2,13 @@ package com.ssafy.vieweongee;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-//(scanBasePackages = {"org.springframework.security.core"})
-@SpringBootApplication(scanBasePackages = {"org.springframework.security.core"})
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+
+@SpringBootApplication
+//@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class VieweongeeApplication {
     public static void main(String[] args) {
         SpringApplication.run(VieweongeeApplication.class, args);
     }
+
 }

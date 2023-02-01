@@ -11,7 +11,7 @@ public class UserRequestMapper {
         return User.builder()
                 .email((String)attributes.get("email"))
                 .name((String) attributes.get("name"))
-                .picture((String) attributes.get("picture"))
+//                .id((String) attributes.get())
                 .social_login((String) attributes.get("social_login"))
                 .build();
     }

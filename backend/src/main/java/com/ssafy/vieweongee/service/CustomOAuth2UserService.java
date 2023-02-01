@@ -1,8 +1,9 @@
 package com.ssafy.vieweongee.service;
 
-import com.ssafy.vieweongee.controller.SocialUserController;
-import com.ssafy.vieweongee.repository.StudyRepository;
+
+import com.ssafy.vieweongee.dto.user.request.SocialCreateRequest;
 import com.ssafy.vieweongee.entity.User;
+
 import com.ssafy.vieweongee.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.ssafy.vieweongee.controller.SocialUserController.NickName;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private final StudyRepository studyRepository;
+//    private final StudyRepository studyRepository;
+    private final TokenService tokenService;
     private final UserRepository userRepository;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DefaultOAuth2UserService();
@@ -59,18 +64,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
             User user;
             try{
-                if (findMember==null)  {
+                if (findMember.isEmpty())  {
                     log.info("카카오 로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
-                    user = new User(email, kakaosAccount.get("nickname").toString(), SocialUserController.NickName(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
+
+                    user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+//                    user = new User(socialInfo);
+
                     userRepository.save(user);
                 }
                 else {
                     user=userRepository.getUserByEmailandSocial(email, social);
+                    log.info("카카오로 로그인했는데 네이버 이메일일 때 유저 : {} in {}", user, social);
                     if (user==null){
                         log.info("카카오 로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email, kakaosAccount.get("nickname").toString(), SocialUserController.NickName(), kakaosAccount.get("profile_image_url").toString(), oAuth2Attribute.getSocial_login());
+                        user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
                     }
                         log.info("카카오 로그인 기록이 있습니당");
@@ -87,12 +96,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             email=oAuth2Attribute.getEmail();
             List<User> findMember = userRepository.getUserByEmail(email);
             log.info("find memeber : {}", findMember);
+            log.info("email now is : {}", email);
             User user;
             try{
-                if (findMember==null) {
+                if (findMember.isEmpty()) {
                     log.info("로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
-                    user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"),SocialUserController.NickName(), oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                    user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
                     userRepository.save(user);
                 }
                 else{
@@ -100,29 +110,30 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     log.info("나 네이버야.......{}", user);
                     if (user==null){
                         log.info("로그인이 처음! 회원으로 등록");
-                        String nickname=SocialUserController.NickName();
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        log.info("서비스 패키지에서의 닉네임은?!!!! {}",nickname );
-                        user = new User(email, oAuth2Attribute.getName(), nickname,oAuth2Attribute.getPicture(), oAuth2Attribute.getSocial_login());
+                        user = new User(email,  NickName(),oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
 
                     }
                     log.info("로그인 기록이 있습니당");
                 }
-            }catch (Exception e){
+            }catch (RuntimeException e){
                 throw new RuntimeException();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }else{
+            // 구글의 경우
                 email=oAuth2Attribute.getEmail();
                 log.info("email : {}", email);
-                List<User> findMember = userRepository.getUserByEmail(email);
-
+                User findMember = userRepository.getUserByEmailandSocial(email, social);
+                log.info("now user is : {}", findMember);
                 User user;
                 try{
                     if (findMember==null) {
                         log.info("로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), SocialUserController.NickName(),oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                        user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
                         userRepository.save(user);
                     }
                     else{
@@ -131,16 +142,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         if (user==null){
                             log.info("로그인이 처음! 회원으로 등록");
                             log.info("{}", oAuth2Attribute.getAttributeKey());
-                            user = new User(oAuth2User.getAttribute("email"), oAuth2User.getAttribute("name"), SocialUserController.NickName(),oAuth2User.getAttribute("picture"), oAuth2Attribute.getSocial_login());
+                            user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
                             userRepository.save(user);
                         }
                         log.info("로그인 기록이 있습니당");
                     }
                 }
-                catch (Exception e){
+                catch (RuntimeException e){
                     throw new RuntimeException();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            }
+        }
 
 
         var memberAttribute = oAuth2Attribute.convertToMap();

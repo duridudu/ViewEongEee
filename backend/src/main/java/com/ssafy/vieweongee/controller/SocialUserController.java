@@ -1,20 +1,30 @@
 package com.ssafy.vieweongee.controller;
 
+
+import com.ssafy.vieweongee.entity.User;
 import com.ssafy.vieweongee.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-//@RestController("/test")
+//@RequiredArgsConstructor
 @Slf4j
+@RestController
 public class SocialUserController {
+    private static UserRepository userRepository;
+    public SocialUserController(UserRepository userRepository){
+        this.userRepository=userRepository;
+    }
 
     // 닉네임 한 개 불러오기
     public static String NickName() throws Exception{
         String result=null;
+        String res=null;
         try{
             URL url = new URL("https://nickname.hwanmoo.kr/?format=text&count=1&max_length=8");
             HttpURLConnection conn=(HttpURLConnection) url.openConnection();
@@ -32,8 +42,9 @@ public class SocialUserController {
             }
 
             result=sb.toString();
-            result = checkNickname(result);
-            log.info("닉네임은!!!!!!!! {}", result);
+            log.info("중간 닉네임은!!!!!!!! {}", result);
+//            res = checkNickname(result);
+
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -42,16 +53,17 @@ public class SocialUserController {
 
     // 중복검사 후 확정
     public static String checkNickname(String nickname) throws Exception {
-        String fin=null;
+        String fin=nickname;
         UserRepository userRepository = null;
-
         // 중복되는 경우 true -> false가 나와야 함.
         // 중복이면 계쏙 새로 만들어서 fin에 저장
-        while (userRepository.existsByNickname(nickname)){
-            fin = NickName();
-        }
+//        while (userRepository.existsByName(nickname)){
+//            fin = NickName();
+//        }
+        log.info("지금은 닉네임 생성중, 체크 : {}", fin);
         return fin;
     }
 
 
 }
+

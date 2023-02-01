@@ -2,12 +2,13 @@ package com.ssafy.vieweongee.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.vieweongee.entity.User;
-import com.ssafy.vieweongee.repository.UserRepository;
+
 import com.ssafy.vieweongee.model.UserRequestMapper;
-import com.ssafy.vieweongee.service.Token;
+import com.ssafy.vieweongee.repository.UserRepository;
 import com.ssafy.vieweongee.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Component;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,35 +32,44 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         log.info("oAuth2User : {}", oAuth2User.getAttributes());
-        User userDto=userRequestMapper.toDto(oAuth2User);
+//        User userDto=userRequestMapper.toDto(oAuth2User);
 
-//        User user=saveOrUpdate(userDto);
-//        Optional<User> findMember = userRepository.findByEmail(userDto.getEmail());
-//        if (findMember.isEmpty()) {
-//            User user = findMember.get();
-//        }
         var attributes = oAuth2User.getAttributes();
-//        String email=userDto.getEmail();
         String email=(String)attributes.get("email");
-        Token token =tokenService.generateToken(email,"USER");
-        log.info("email in SuccessHandler : {}", email);
-        userRepository.updateRefreshToken(email, (String)token.getRefreshToken());
-//        userRepository.updateSocialName(email, (String))
-        writeTokenResponse(response, token);
-    }
 
-    private void writeTokenResponse(HttpServletResponse response, Token token) throws IOException{
-        response.setContentType("text/html;charset=UTF-8");
-        log.info("{}", token.getRefreshToken());
-        response.addHeader("Auth", token.getToken());
-        response.addHeader("Refresh", token.getRefreshToken());
+//        log.info("controller, refresh token / social : {} / {}", refreshToken, (String)attributes.get("id"));
+        User user=userRepository.getUserByEmailandSocial(email, (String)attributes.get("id"));
+        log.info("성공핸들러에서 불러온 user : {}, {}", user.getId(), user.getEmail());
+
+
+        String AccessJwt =tokenService.createAccessToken(user.getId());
+        String refreshToken=tokenService.createRefreshToken();
+
+
+        Long id=user.getId();
+        tokenService.setRefreshToken(id,refreshToken);
+        List<String> tokens=new ArrayList<>();
+        tokens.add(AccessJwt);
+        tokens.add(refreshToken);
+
+        response.addHeader("access", AccessJwt);
+//        response.addHeader("refresh",refreshToken);
         response.setContentType("application/json;charset=UTF-8");
-
-        var writer=response.getWriter();
-        writer.println(objectMapper.writeValueAsString(token));
-        writer.flush();
+//        return ResponseEntity.ok().body(tokens);
     }
+
+//    private void writeTokenResponse(HttpServletResponse response, Token token) throws IOException{
+//        response.setContentType("text/html;charset=UTF-8");
+//        log.info("{}", token.getRefreshToken());
+//        response.addHeader("Auth", token.getToken());
+//        response.addHeader("Refresh", token.getRefreshToken());
+//        response.setContentType("application/json;charset=UTF-8");
+//
+//        var writer=response.getWriter();
+//        writer.println(objectMapper.writeValueAsString(token));
+//        writer.flush();
+//    }
 }
