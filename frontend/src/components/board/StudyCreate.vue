@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <ModalView v-if="showModal">안녕</ModalView> -->
     <el-container>
       <el-main class="outline-box">
         <h2 class="text-h6 mb-3">스터디 만들기</h2>
@@ -92,10 +91,40 @@
               class="mt-10 mb-10"
               size="large"
               style="margin: 0 auto; margin-top: 3%"
-              @click="showModal = true"
+              @click="dialogVisible = true"
             >
               채점 템플릿 선택
             </el-button>
+            <el-dialog
+              class="el-dialog"
+              v-model="dialogVisible"
+              width="600px"
+              style="border-radius: 5%"
+            >
+              <el-table
+              class="el-table"
+                :span-method="objectSpanMethod"
+                :data="tableData"
+                style="width: 100%"
+                @selection-change="handleSelectionChange"
+                :class="tableRowClassName"
+              >
+                <el-table-column type="selection" width="35"></el-table-column>
+                <el-table-column prop="type" label="대분류" width="120" />
+                <el-table-column prop="name1" label="항목" />
+              </el-table>
+              <p style="margin-top: 3%; text-align: center; color: red">
+                * 최소 1개 이상의 대분류를 선택해주세요.
+              </p>
+              <el-button        
+              block
+              color="#9DADD8"
+              size="large"
+              style="margin-top: 3%; margin-left: 35%; width: 25%;"
+            >
+              완료
+            </el-button>
+            </el-dialog>
           </el-row>
 
           <el-row
@@ -146,17 +175,43 @@
 <script>
 // import { parseHeight } from "element-plus/es/components/table/src/util";
 import { ref } from "vue";
-// import ModalView from "@/components/board/StudyScoreModal.vue";
 
 const checkList = "1시간";
+const multipleSelection = ref([]);
+
 export default {
   name: "UserSignup",
-  components: {
-    // ModalView,
+  components: {},
+  methods: {
+    handleSelectionChange(val) {
+      multipleSelection.value = val;
+    },
+    objectSpanMethod({ rowIndex, columnIndex }) {
+      if (columnIndex === 0 || columnIndex === 1) {
+        if (rowIndex % 2 === 0) {
+          return {
+            rowspan: 2,
+            colspan: 1,
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0,
+          };
+        }
+      }
+    },
+    tableRowClassName({ rowIndex, columnIndex }) {
+      if (columnIndex === 1 || columnIndex === 2 || rowIndex === 1) {
+        console.log(rowIndex);
+        return 'warning-row'
+      }
+      return ''
+    },
   },
   data() {
     return {
-      showModal: false,
+      dialogVisible: false,
       text: ref(""),
       textarea: ref(""),
       checkList,
@@ -222,6 +277,49 @@ export default {
           label: "6",
         },
       ],
+      tableData: [
+        {
+          type: "태도",
+          name1: "자신감 있는 표정과 목소리인가?",
+        },
+        {
+          type: "태도",
+          name1: "기본 준비 자세가 올바른가?",
+        },
+        {
+          type: "직무역량",
+          name1: "지원한 직무에 대한 구체적인 이해도를 가졌는가?",
+        },
+        {
+          type: "직무역량",
+          name1: "직무 수행에 필요한 역량을 갖췄는가?",
+        },
+        {
+          type: "팀워크",
+          name1: "다양한 의견을 수렴한 경험이 있는가?",
+        },
+        {
+          type: "팀워크",
+          name1: "적극적으로 참여하는 자세를 가졌는가?",
+
+        },
+        {
+          type: "문제해결",
+          name1: "문제를 해결하고자 하는 열정, 끈기, 의지를 가졌는가?",
+        },
+        {
+          type: "문제해결",
+          name1: "해결에 도움이 되는 방향성을 제시하였는가?",
+        },
+        {
+          type: "기업이해도",
+          name1: "기업에 대한 이해도가 높은가?",
+        },
+        {
+          type: "기업이해도",
+          name1: "퇴사 가능성이 있는가?",
+        },
+      ],
     };
   },
 };
@@ -239,10 +337,12 @@ h2 {
 }
 
 p {
-  float: left;
+  /* float: left; */
   margin: 30px 0 10px 0;
 }
-
+.el-dialog{
+  display: flex;
+}
 .confirm-btn {
   color: white;
   width: 30%;
@@ -254,5 +354,8 @@ p {
 }
 .el-select {
   width: 100%;
+}
+.el-table .warning-row {
+  --el-table-tr-bg-color: var(--el-color-warning-light-9);
 }
 </style>

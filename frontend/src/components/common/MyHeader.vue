@@ -63,7 +63,6 @@
                     >스터디 게시판</router-link
                   ></el-dropdown-item
                 >
-
                 <el-dropdown-item divided>공지사항</el-dropdown-item>
               </el-dropdown-menu>
             </template>
