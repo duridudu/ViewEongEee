@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.31'
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 //    implementation "com.fasterxml.jackson.core:jackson-core:2.9.9"
 //    implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.9"

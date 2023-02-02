@@ -1,6 +1,8 @@
 package com.ssafy.vieweongee.service;
 
+import com.ssafy.vieweongee.dto.user.request.PasswordCheckRequest;
 import com.ssafy.vieweongee.dto.user.request.UserCreateRequest;
+import com.ssafy.vieweongee.dto.user.request.UserModifyRequest;
 import com.ssafy.vieweongee.entity.User;
 import com.ssafy.vieweongee.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +43,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Long getUserId(User user) {
-        log.info("getUserID in service, user : {} / {}", user.getId(), user.getSocial_login());
+        log.info("getUserID in service, user : {} / {}", user.getId(), user.getProvider());
         User dbUser = userRepository.getUserByEmailandSocial(user.getEmail(), "global");
         return dbUser.getId();
     }
+
 
     @Override
     public User getUserByEmail(String email) {
@@ -60,6 +63,14 @@ public class UserServiceImpl implements UserService{
         return dbUser;
     }
     @Override
+    public User getUser(String email, String provider) {
+        log.info("@@@@@userService provider :  {}", provider);
+        User dbUser = userRepository.getUserByEmailandSocial(email, provider);
+        log.info("######################userService getUser : {}#########################", dbUser);
+        return dbUser;
+    }
+
+    @Override
     public boolean checkDuplicatedEmail(String email) {
         System.out.println(email);
         if(userRepository.existsByEmail(email))
@@ -72,6 +83,50 @@ public class UserServiceImpl implements UserService{
         if(userRepository.existsByName(nickname))
             return true;
         return false;
+    }
+
+    @Override
+    public boolean checkPassword(PasswordCheckRequest userInfo) {
+        User dbUser = userRepository.getUserByEmailandSocial(userInfo.getEmail(), userInfo.getProvider());
+        if(dbUser != null && passwordEncoder.matches(userInfo.getPassword(), dbUser.getPassword()))
+            return true;
+        return false;
+    }
+
+    @Override
+    public void deleteUser(PasswordCheckRequest userInfo){
+        User user = userRepository.findByEmailAndProvider(userInfo.getEmail(), userInfo.getProvider());
+        userRepository.delete(user);
+    }
+
+    @javax.transaction.Transactional
+    @Override
+    public void modifyUser(UserModifyRequest userInfo) {
+        User dbUser = userRepository.findByEmailAndProvider(userInfo.getEmail(), userInfo.getProvider());
+        String encryptPassword = passwordEncoder.encode(userInfo.getPassword());
+        dbUser.update(userInfo.getName(), encryptPassword);
+        userRepository.save(dbUser);
+
+    }
+
+    @Override
+    public void deleteRefreshtoken(String email, String provider) {
+        User logoutUser = userRepository.findByEmailAndProvider(email, provider);
+        logoutUser.deleteRefreshToken(null);
+    }
+
+
+    @Override
+    public boolean saveTempPassword(String email, String password) {
+        User dbUser = userRepository.findByEmailAndProvider(email, "global");
+        if(dbUser != null){
+            String tempPw = passwordEncoder.encode(password);
+            dbUser.updateTempPassword(tempPw);
+            userRepository.save(dbUser);
+            return true;
+        }
+        else
+            return false;
     }
 
     @Override

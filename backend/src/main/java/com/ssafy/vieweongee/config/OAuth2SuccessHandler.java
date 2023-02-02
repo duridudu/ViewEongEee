@@ -41,7 +41,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         var attributes = oAuth2User.getAttributes();
         String email=(String)attributes.get("email");
 
-//        log.info("controller, refresh token / social : {} / {}", refreshToken, (String)attributes.get("id"));
+        log.info("controller, email / social : {} / {}", email, (String)attributes.get("id"));
         User user=userRepository.getUserByEmailandSocial(email, (String)attributes.get("id"));
         log.info("성공핸들러에서 불러온 user : {}, {}", user.getId(), user.getEmail());
 

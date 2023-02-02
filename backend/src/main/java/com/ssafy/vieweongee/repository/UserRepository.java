@@ -24,9 +24,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByJwtToken(String token);
 
     List<User> getUserByEmail(String email);
-    @Query("SELECT u FROM User u WHERE u.email=:email and u.social_login=:social")
+    @Query("SELECT u FROM User u WHERE u.email=:email and u.provider=:social")
     User getUserByEmailandSocial(@Param("email") String email, @Param("social") String social);
 
+    User findByEmailAndProvider(String email, String provider);
     @Query("SELECT u FROM User u WHERE u.email=:email")
     User getUserByEmailUser(@Param("email") String email);
 

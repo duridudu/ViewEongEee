@@ -2,8 +2,10 @@ package com.ssafy.vieweongee.entity;
 
 import com.ssafy.vieweongee.dto.user.request.SocialCreateRequest;
 import com.ssafy.vieweongee.dto.user.request.UserCreateRequest;
+import com.ssafy.vieweongee.dto.user.request.UserModifyRequest;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -29,8 +31,7 @@ public class User{
     private String name;
     @Column(length = 30,nullable = false)
     private String email;
-//    @Column(nullable = false)
-//    private String picture;
+
     @Column()
     private String password;
 
@@ -41,49 +42,71 @@ public class User{
     private String access_token;
 
     @Column(length = 10)
-    private String social_login;
+    private String provider;
 
-    private String social_token;
-
-//    @Column(length = 10)
-//    private String nickname;
     private String jwt_token;
 
-    //    private ArrayList<> roleList;
-    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
+//    @ColumnDefault("false")
+//    @Column(columnDefinition = "TINYINT(1)")
+//    private boolean authority;
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<Notice> notices = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+//    private List<Alarm> alarms = new ArrayList<>();
+////
+//    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
+//    private List<Study> studies = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "participant_id.user_id", cascade = CascadeType.ALL)
+//    private List<Participant> participants = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "progress_id.user_id", cascade = CascadeType.ALL)
+//    private List<Progress> progresses = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "score_id.user_id", cascade = CascadeType.ALL)
+//    private List<Scorecard> scorecards = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+//    private List<Comment> comments = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+//    private List<Reply> replies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notice> notices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Alarm> alarms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Study> studies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "participant_id.user_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "participant_id.user", cascade = CascadeType.ALL)
     private List<Participant> participants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "progress_id.user_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "progress_id.user", cascade = CascadeType.ALL)
     private List<Progress> progresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "score_id.user_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "score_id.user", cascade = CascadeType.ALL)
     private List<Scorecard> scorecards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    public User(Long id, String name, String email, String password, String passwordCheck, String access_token, String social_login, String social_token, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
+    public User(Long id, String name, String email, String password, String passwordCheck, String access_token, String provider, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.passwordCheck = passwordCheck;
         this.access_token = access_token;
-        this.social_login = social_login;
-        this.social_token = social_token;
+        this.provider = provider;
         this.jwt_token = jwt_token;
         this.notices = notices;
         this.alarms = alarms;
@@ -111,7 +134,7 @@ public class User{
         this.name=registInfo.getName();
         this.password=registInfo.getPassword();
         this.passwordCheck=registInfo.getPasswordCheck();
-        this.social_login="global";
+        this.provider="global";
     }
 
     @Builder
@@ -119,20 +142,38 @@ public class User{
     public User(SocialCreateRequest socialInfo) {
         this.name=name;
         this.email=email;
-        this.social_login=social_login;
+        this.provider=provider;
         this.jwt_token=jwt_token;
         this.access_token=access_token;
     }
 
-    public User(String email, String name, String social_login) {
+    @Builder
+    public User(UserModifyRequest modifyInfo){
+        this.email = modifyInfo.getEmail();
+        this.password = modifyInfo.getPassword();
+        this.name = modifyInfo.getName();
+    }
+
+    public User(String email, String name, String provider) {
         this.name=name;
         this.email=email;
-        this.social_login=social_login;
+        this.provider=provider;
     }
 
     public void setJwtToken(String refreshJwt) {
         this.jwt_token=refreshJwt;
     }
 
+    public void update(String nickname, String password){
+        this.name = nickname;
+        this.password = password;
+    }
+    public void deleteRefreshToken(String token){
+        this.jwt_token = token;
+    }
+
+    public void updateTempPassword(String password){
+        this.password = password;
+    }
 
 }

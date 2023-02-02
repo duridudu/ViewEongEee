@@ -41,7 +41,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuth2Attribute oAuth2Attribute = OAuth2Attribute.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
         String email=null;
-        String social = oAuth2Attribute.getSocial_login();
+        String social = oAuth2Attribute.getProvider();
 
         log.info("지금 소셜 : {}", social);
         log.info("지금 oAuth2Attribute : {}", oAuth2Attribute);
@@ -68,7 +68,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     log.info("카카오 로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
 
-                    user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+                    user = new User(email, NickName(), oAuth2Attribute.getProvider());
 //                    user = new User(socialInfo);
 
                     userRepository.save(user);
@@ -79,7 +79,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     if (user==null){
                         log.info("카카오 로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+                        user = new User(email, NickName(), oAuth2Attribute.getProvider());
                         userRepository.save(user);
                     }
                         log.info("카카오 로그인 기록이 있습니당");
@@ -102,7 +102,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 if (findMember.isEmpty()) {
                     log.info("로그인이 처음! 회원으로 등록");
                     log.info("{}", oAuth2Attribute.getAttributeKey());
-                    user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+                    user = new User(email, NickName(), oAuth2Attribute.getProvider());
                     userRepository.save(user);
                 }
                 else{
@@ -111,7 +111,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     if (user==null){
                         log.info("로그인이 처음! 회원으로 등록");
                         log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email,  NickName(),oAuth2Attribute.getSocial_login());
+                        user = new User(email,  NickName(),oAuth2Attribute.getProvider());
                         userRepository.save(user);
 
                     }
@@ -132,8 +132,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 try{
                     if (findMember==null) {
                         log.info("로그인이 처음! 회원으로 등록");
-                        log.info("{}", oAuth2Attribute.getAttributeKey());
-                        user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+                        log.info("푸로바이더 : {}", oAuth2Attribute.getProvider());
+                        user = new User(email, NickName(), oAuth2Attribute.getProvider());
                         userRepository.save(user);
                     }
                     else{
@@ -142,7 +142,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         if (user==null){
                             log.info("로그인이 처음! 회원으로 등록");
                             log.info("{}", oAuth2Attribute.getAttributeKey());
-                            user = new User(email, NickName(), oAuth2Attribute.getSocial_login());
+                            user = new User(email, NickName(), oAuth2Attribute.getProvider());
                             userRepository.save(user);
                         }
                         log.info("로그인 기록이 있습니당");

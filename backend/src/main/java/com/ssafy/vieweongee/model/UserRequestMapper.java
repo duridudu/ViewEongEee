@@ -12,7 +12,7 @@ public class UserRequestMapper {
                 .email((String)attributes.get("email"))
                 .name((String) attributes.get("name"))
 //                .id((String) attributes.get())
-                .social_login((String) attributes.get("social_login"))
+                .provider((String) attributes.get("social_login"))
                 .build();
     }
 

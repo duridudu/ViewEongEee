@@ -19,7 +19,7 @@ class OAuth2Attribute {
     private String email;
     private String name;
     private String picture;
-    private String social_login;
+    private String provider;
 
     static OAuth2Attribute of(String provider, String attributeKey,
                               Map<String, Object> attributes) {
@@ -43,7 +43,7 @@ class OAuth2Attribute {
                 .name((String) response.get("nickname"))
                 .email((String) response.get("email"))
                 .picture((String) response.get("profile_image"))
-                .social_login("naver")
+                .provider("naver")
                 .attributes(response)
                 .attributeKey(attributeKey)
                 .build();
@@ -54,7 +54,7 @@ class OAuth2Attribute {
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .picture((String) attributes.get("picture"))
-                .social_login("google")
+                .provider("google")
                 .attributes(attributes)
                 .attributeKey(attributeKey)
                 .build();
@@ -68,7 +68,7 @@ class OAuth2Attribute {
                 .name((String) kakaoProfile.get("nickname"))
                 .email((String) kakaoAccount.get("email"))
                 .picture((String)kakaoProfile.get("profile_image_url"))
-                .social_login("kakao")
+                .provider("kakao")
                 .attributes(kakaoAccount)
                 .attributeKey(attributeKey)
                 .build();
@@ -76,7 +76,7 @@ class OAuth2Attribute {
 
     Map<String, Object> convertToMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("id", social_login);
+        map.put("id", provider);
         map.put("key", attributeKey);
         map.put("name", name);
         map.put("email", email);

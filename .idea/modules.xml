@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/S08P12A701.iml" filepath="$PROJECT_DIR$/.idea/S08P12A701.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Vieweongee.iml" filepath="$PROJECT_DIR$/.idea/modules/Vieweongee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Vieweongee.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Vieweongee.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.ssafy.Vieweongee.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.ssafy.Vieweongee.main.iml" />
     </modules>
   </component>
 </project>
