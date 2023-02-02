@@ -3,13 +3,14 @@
     <el-container>
       <el-main class="outline-box">
         <h2 class="text-h6 mb-3">스터디 만들기</h2>
-        <el-form ref="ruleFormRef" :model="studyFormInfo" :rules="rules">
+        <el-form>
           <el-row :gutter="20">
             <el-col><p>제목</p></el-col>
             <el-col>
-              <el-form-item prop="title" required>
-                <el-input v-model="studyFormInfo.title" placeholder="제목을 입력하세요." />
-              </el-form-item>
+              <el-input
+                v-model="studyFormInfo.title"
+                placeholder="제목을 입력하세요."
+              />
             </el-col>
           </el-row>
 
@@ -24,34 +25,39 @@
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item prop="entfName" required>
-                <el-input v-model="studyFormInfo.entfName" placeholder="기업을 입력하세요." />
-              </el-form-item>
+              <el-input
+                v-model="studyFormInfo.entfName"
+                placeholder="기업을 입력하세요."
+              />
             </el-col>
 
             <el-col :span="12">
-              <el-form-item prop="deptName" required>
-                <el-select
-                  v-model="studyFormInfo.deptName"
-                  class="m-2"
-                  placeholder="직군을 선택하세요."
-                >
-                  <el-option
-                    v-for="item in deptOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+              <el-select
+                v-model="studyFormInfo.deptName"
+                class="m-2"
+                placeholder="직군을 선택하세요."
+              >
+                <el-option
+                  v-for="item in deptOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
-            <el-col><p>날짜</p></el-col>
+            <el-col><p>일시</p></el-col>
             <el-col>
-              <el-form-item prop="date" required> </el-form-item>
-            </el-col>
+              <el-date-picker
+                v-model="studyFormInfo.date"
+                type="datetime"
+                placeholder="스터디 시작 시간"
+                style="width: 100%"
+                format="YYYY/MM/DD hh:mm"
+                value-format="YYYY-MM-DD h:m a"
+            /></el-col>
           </el-row>
 
           <el-row :gutter="20">
@@ -65,36 +71,32 @@
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item prop="capacity" required>
-                <el-select
-                  v-model="studyFormInfo.capacity"
-                  class="m-2 select"
-                  placeholder="인원 수를 선택하세요."
-                >
-                  <el-option
-                    v-for="item in capacityOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+              <el-select
+                v-model="studyFormInfo.personnel"
+                class="m-2 select"
+                placeholder="인원 수를 선택하세요."
+              >
+                <el-option
+                  v-for="item in personnelOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="studyType" required>
-                <el-select
-                  v-model="studyFormInfo.studyType"
-                  class="m-2"
-                  placeholder="면접 유형을 선택하세요."
-                >
-                  <el-option
-                    v-for="item in typeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+              <el-select
+                v-model="studyFormInfo.studyType"
+                class="m-2"
+                placeholder="면접 유형을 선택하세요."
+              >
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-col>
           </el-row>
 
@@ -126,45 +128,46 @@
                 <el-table-column prop="type" label="대분류" width="120" />
                 <el-table-column prop="name1" label="항목" />
               </el-table>
-              <p style="margin-top: 3%; text-align: center; color: red">
+              <div style="margin-top: 3%; text-align: center; color: red">
                 * 최소 1개 이상의 대분류를 선택해주세요.
-              </p>
+              </div>
               <el-button
                 block
                 color="#9DADD8"
                 size="large"
-                style="margin-top: 3%; margin-left: 35%; width: 25%"
+                style="margin-top: 3%; text-align: center; width: 25%"
+                @click="setScoringList"
               >
                 완료
               </el-button>
             </el-dialog>
           </el-row>
 
-          <el-row :gutter="20" style="display: flex; justify-content: space-around">
+          <el-row
+            :gutter="20"
+            style="display: flex; justify-content: space-around"
+          >
             <el-col><p>진행시간</p></el-col>
 
-            <el-form-item prop="time">
-              <el-checkbox-group v-model="studyFormInfo.runningTime">
-                <el-checkbox label="1시간" name="time" />
-                <el-checkbox label="2시간" name="time" />
-                <el-checkbox label="3시간" name="time" />
-                <el-checkbox label="4시간" name="time" />
-              </el-checkbox-group>
-            </el-form-item>
+            <el-checkbox-group v-model="studyFormInfo.runningTime">
+              <el-checkbox label="1시간" name="time" />
+              <el-checkbox label="2시간" name="time" />
+              <el-checkbox label="3시간" name="time" />
+              <el-checkbox label="4시간" name="time" />
+            </el-checkbox-group>
           </el-row>
 
           <el-row :gutter="20">
             <el-col><p>소개</p></el-col>
             <el-col>
-              <el-form-item label="Activity form" prop="desc">
-                <el-input
-                  type="textarea"
-                  maxlength="300"
-                  v-model="textarea"
-                  class="text-area"
-                  :autosize="{ minRows: 5, maxRows: 5 }"
-                  show-word-limit
-                ></el-input> </el-form-item
+              <el-input
+                type="textarea"
+                maxlength="300"
+                v-model="studyFormInfo.desc"
+                class="text-area"
+                :autosize="{ minRows: 5, maxRows: 5 }"
+                show-word-limit
+              ></el-input
             ></el-col>
           </el-row>
 
@@ -175,7 +178,7 @@
               class="mt-10 mb-10 confirm-btn"
               size="large"
               style="margin: 0 auto; margin-top: 3%"
-              @click="submitForm(ruleFormRef)"
+              @click="submitForm()"
             >
               완료
             </el-button>
@@ -188,7 +191,7 @@
 
 <script>
 // import { parseHeight } from "element-plus/es/components/table/src/util";
-import { createRenderer, ref } from "vue";
+import { ref } from "vue";
 // import { useStore } from "vuex";
 // import { useRouter } from "vue-router";
 import axios from "axios";
@@ -203,6 +206,7 @@ export default {
   methods: {
     handleSelectionChange(val) {
       multipleSelection.value = val;
+      console.log(multipleSelection.value);
     },
     // 채점표 템플릿 el-table 행열 병합
     objectSpanMethod({ rowIndex, columnIndex }) {
@@ -228,6 +232,7 @@ export default {
       }
       return "";
     },
+    setScoringList() {},
 
     createStudy({ studyFormInfo }) {
       axios
@@ -244,36 +249,21 @@ export default {
         });
       // .catch((err) => {});
     },
-    async submitForm(formEl) {
-      console.log("완료버튼");
-      if (!formEl) return;
-      await formEl.validate((valid, fields) => {
-        if (valid) console.log("submit!");
-        else console.log("error!", fields);
-      });
+    submitForm() {
       // createStudy(studyFormInfo);
+      console.log(this.studyFormInfo);
     },
   },
   data() {
     return {
       dialogVisible: false,
-      ruleFormRef: ref(),
-      rules: {
-        title: [{ required: true, message: "제목을 입력해주세요", trigger: "blur" }],
-        entfName: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-        deptName: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-        capacity: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-        date: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-        time: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-        desc: [{ required: true, message: "기업을 입력해주세요", trigger: "change" }],
-      },
       // 스터디 생성 정보
       studyFormInfo: [
         {
           title: "",
           entfName: "",
           deptName: "",
-          capacity: 0,
+          personnel: 0,
           studyType: "",
           date: "",
           runningTime: 1,
@@ -321,7 +311,7 @@ export default {
         },
       ],
       // 인원 수
-      capacityOptions: [
+      personnelOptions: [
         {
           value: "1",
           label: "1",
@@ -407,7 +397,7 @@ h2 {
 }
 
 p {
-  /* float: left; */
+  float: left;
   margin: 30px 0 10px 0;
 }
 .el-dialog {
