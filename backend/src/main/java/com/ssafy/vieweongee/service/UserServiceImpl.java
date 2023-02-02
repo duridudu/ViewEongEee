@@ -55,6 +55,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public User getUserById(Long id){
+        User dbUser=userRepository.getUserById(id);
+        return dbUser;
+    }
+    @Override
     public boolean checkDuplicatedEmail(String email) {
         System.out.println(email);
         if(userRepository.existsByEmail(email))

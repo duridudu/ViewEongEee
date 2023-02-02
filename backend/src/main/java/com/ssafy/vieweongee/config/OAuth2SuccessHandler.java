@@ -1,6 +1,7 @@
 package com.ssafy.vieweongee.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.ssafy.vieweongee.entity.User;
 
 import com.ssafy.vieweongee.model.UserRequestMapper;
@@ -46,16 +47,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 
         String AccessJwt =tokenService.createAccessToken(user.getId());
-        String refreshToken=tokenService.createRefreshToken();
+        String RefreshToken=tokenService.createRefreshToken();
 
 
         Long id=user.getId();
-        tokenService.setRefreshToken(id,refreshToken);
+        tokenService.setRefreshToken(id,RefreshToken);
         List<String> tokens=new ArrayList<>();
         tokens.add(AccessJwt);
-        tokens.add(refreshToken);
+        tokens.add(RefreshToken);
 
-        response.addHeader("access", AccessJwt);
+        response.addHeader("ACCESS", AccessJwt);
+        log.info("ACCESS : {}",AccessJwt);
+        log.info("REFRESH : {}", RefreshToken);
 //        response.addHeader("refresh",refreshToken);
         response.setContentType("application/json;charset=UTF-8");
 //        return ResponseEntity.ok().body(tokens);

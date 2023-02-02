@@ -39,8 +39,7 @@ public class User{
 
     @Transient
     private String access_token;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+
     @Column(length = 10)
     private String social_login;
 
@@ -76,14 +75,13 @@ public class User{
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    public User(Long id, String name, String email, String password, String passwordCheck, String access_token, Role role, String social_login, String social_token, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
+    public User(Long id, String name, String email, String password, String passwordCheck, String access_token, String social_login, String social_token, String jwt_token, List<Notice> notices, List<Alarm> alarms, List<Study> studies, List<Participant> participants, List<Progress> progresses, List<Scorecard> scorecards, List<Comment> comments, List<Reply> replies) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.passwordCheck = passwordCheck;
         this.access_token = access_token;
-        this.role = role;
         this.social_login = social_login;
         this.social_token = social_token;
         this.jwt_token = jwt_token;

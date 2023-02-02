@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,9 +34,11 @@ public class UserController {
     //로그인
     @ResponseBody
     @PostMapping("/signin")
-    public ResponseEntity login(@RequestBody User user, HttpServletResponse response) {
+    public ResponseEntity login(@RequestBody User user) {
         log.info("나 로그인하러 왔옹 : {}", user.getEmail());
+
         log.info("여긴 유저 컨트롤러.. 유저 이메일은 {} 유저 프로바이더는 : {}", user.getEmail(), "global");
+
         User loginUser = userService.login(user);
         if(loginUser != null){
             Long userId = userService.getUserId(user);
@@ -45,7 +48,7 @@ public class UserController {
             log.info("리프레쉬 앤 엑세스 : {} // {}", refreshToken, accessToken);
             tokenService.setRefreshToken(userId,refreshToken);
 
-            List<String> tokens=new ArrayList<>();
+//            List<String> tokens=new ArrayList<>();
 
 //            tokens.add(accessToken);
 //            tokens.add(refreshToken);
@@ -132,7 +135,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/signout")
     public ResponseEntity logout(@RequestBody UserCheckRequest userToken, HttpServletResponse response){
         String accessToken=userToken.getAccessToken();
         boolean check=tokenService.checkTokenValid(userToken.getAccessToken());
@@ -142,8 +145,8 @@ public class UserController {
             return ResponseEntity.status(200).body("로그아웃 완료");
         }
         return ResponseEntity.status(409).body("로그아웃 실패 - 토큰 만료");
-
     }
+
     //email 인증
 //    @PostMapping("/email-valid")
 //    public ResponseEntity<?> sendEmail(){

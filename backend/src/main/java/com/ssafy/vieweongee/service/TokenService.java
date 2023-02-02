@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-import com.ssafy.vieweongee.model.JwtProperties;
 import com.ssafy.vieweongee.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -39,13 +38,19 @@ public class TokenService {
     }
 
     public static String createAccessToken(Long id){
-        log.info("id : {}, username(id) : {}",id);
-        return JWT.create()
+        log.info("id : {}",id);
+        String token=JWT.create()
                 .withSubject(JwtProperties.ACCESS_TOKEN)
                 .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
-                .withClaim(JwtProperties.Id,id)
+                .withClaim("Id",id.toString())
 //                .withClaim(JwtProperties.USERNAME,username)
                 .sign(Algorithm.HMAC512(secretKey));
+        JWTVerifier verifier =
+                JWT.require(Algorithm.HMAC512(secretKey))
+                        .build();
+        String nowId = verifier.verify(token).getClaim("Id").toString();
+        log.info(nowId);
+        return token;
     }
 
     public static String createRefreshToken(){
@@ -67,13 +72,18 @@ public class TokenService {
     }
 
     public boolean checkTokenValid(String token){
+        log.info("token is {}", token);
         JWTVerifier verifier =
             JWT.require(Algorithm.HMAC512(secretKey))
                 .build();
+        log.info("체크토큰의 verifier는...{}",verifier);
         // 만료됐으면 에러남
-        String username= verifier.verify(token).getClaim("USERNAME").toString();
+        String id= verifier.verify(token).getClaim("Id").toString();
+        log.info("체크토큰valid의 username은 지금... {}",id);
+
         // 유저네임이 널 아니면 = 잘 검증돼서 유저네임 뽑히면 트루 반환
-        if (username!=null){
+        if (id!=null){
+            log.info("TRUE야@@@@@@@@@@@@");
             return true;
         }else{
             return false;
@@ -81,6 +91,8 @@ public class TokenService {
     }
 
     public boolean isExpiredToken(String token){
+        log.info("isExpired's token : {}", token);
+
         try{
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
         }catch(TokenExpiredException e){
@@ -123,6 +135,11 @@ public class TokenService {
         }
         return false;
     }
+
+//    public String getInfo(String jwt) {
+//        Long id = userRepository.findByJwtToken(jwt);
+//        return id;
+//    }
 
 
 //    public boolean verifyToken(String token){

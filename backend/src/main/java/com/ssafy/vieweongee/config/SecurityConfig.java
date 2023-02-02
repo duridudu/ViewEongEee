@@ -22,6 +22,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -37,25 +40,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .cors().configurationSource(corsConfigurationSource());
 
+        http
                 .authorizeRequests()
-//                .antMatchers("api/users/**").permitAll()
-//                .antMatchers("/manager/**").access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//                .antMatchers("/admin/**").hasRole("ROLE_ADMIN")
-                .anyRequest().permitAll()
+                    .anyRequest().permitAll()
                 .and()					//추가
-                .oauth2Login().successHandler(successHandler)			// OAuth2기반의 로그인인 경우
-//                .loginPage("")		// 인증이 필요한 URL에 접근하면 /loginForm으로 이동
-//                .defaultSuccessUrl("/")			// 로그인 성공하면 "/" 으로 이동
-//                .failureUrl("/loginForm")		// 로그인 실패 시 /loginForm으로 이동
-                .userInfoEndpoint()			// 로그인 성공 후 사용자정보를 가져온다
-                .userService(oAuth2UserService);	//사용자정보를 처리할 때 사용한다
+                    .oauth2Login().successHandler(successHandler)			// OAuth2기반의 로그인인 경우
+                    .userInfoEndpoint()			// 로그인 성공 후 사용자정보를 가져온다
+                    .userService(oAuth2UserService);	//사용자정보를 처리할 때 사용한다
+//                .and();
 
-//                .addFilter(new JwtAuthenticationFilter(authenticationManager(),new TokenService(userRepository)))
+//        http.addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class);
 //                .anonymous()
 //                    .oauth2Login().authorizeRequests()
 //                    .successHandler(successHandler)
-//                    .userInfoEndpoint().userService(oAuth2UserService)
+
 //
 //                .antMatchers().permitAll();
 
@@ -78,9 +78,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .invalidateHttpSession(true);
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     //비밀번호 암호화
     @Bean
     public PasswordEncoder passwordEncoder(){
+
         return new BCryptPasswordEncoder();
     }
 
