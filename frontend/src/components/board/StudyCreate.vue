@@ -26,19 +26,19 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-input
-                v-model="studyFormInfo.entfName"
+                v-model="studyFormInfo.companyName"
                 placeholder="기업을 입력하세요."
               />
             </el-col>
 
             <el-col :span="12">
               <el-select
-                v-model="studyFormInfo.deptName"
+                v-model="studyFormInfo.job"
                 class="m-2"
                 placeholder="직군을 선택하세요."
               >
                 <el-option
-                  v-for="item in deptOptions"
+                  v-for="item in jobOptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -51,13 +51,14 @@
             <el-col><p>일시</p></el-col>
             <el-col>
               <el-date-picker
-                v-model="studyFormInfo.date"
+                v-model="studyFormInfo.studyDatetime"
                 type="datetime"
-                placeholder="스터디 시작 시간"
                 style="width: 100%"
-                format="YYYY/MM/DD hh:mm"
-                value-format="YYYY-MM-DD h:m a"
-            /></el-col>
+                placeholder="스터디 시작 시간"
+                format="YYYY/MM/DD HH:mm"
+                value-format="YYYY-MM-DD HH:mm"
+              />
+            </el-col>
           </el-row>
 
           <el-row :gutter="20">
@@ -86,7 +87,7 @@
             </el-col>
             <el-col :span="12">
               <el-select
-                v-model="studyFormInfo.studyType"
+                v-model="studyFormInfo.type"
                 class="m-2"
                 placeholder="면접 유형을 선택하세요."
               >
@@ -106,7 +107,7 @@
               class="mt-10 mb-10"
               size="large"
               style="margin: 0 auto; margin-top: 3%"
-              @click="dialogVisible = true"
+              @click="showDialog"
             >
               채점 템플릿 선택
             </el-button>
@@ -148,13 +149,12 @@
             style="display: flex; justify-content: space-around"
           >
             <el-col><p>진행시간</p></el-col>
-
-            <el-checkbox-group v-model="studyFormInfo.runningTime">
-              <el-checkbox label="1시간" name="time" />
-              <el-checkbox label="2시간" name="time" />
-              <el-checkbox label="3시간" name="time" />
-              <el-checkbox label="4시간" name="time" />
-            </el-checkbox-group>
+            <el-radio-group v-model="studyFormInfo.runningTime">
+              <el-radio :label="1">1시간</el-radio>
+              <el-radio :label="2">2시간</el-radio>
+              <el-radio :label="3">3시간</el-radio>
+              <el-radio :label="4">4시간</el-radio>
+            </el-radio-group>
           </el-row>
 
           <el-row :gutter="20">
@@ -163,7 +163,7 @@
               <el-input
                 type="textarea"
                 maxlength="300"
-                v-model="studyFormInfo.desc"
+                v-model="studyFormInfo.content"
                 class="text-area"
                 :autosize="{ minRows: 5, maxRows: 5 }"
                 show-word-limit
@@ -190,23 +190,72 @@
 </template>
 
 <script>
-// import { parseHeight } from "element-plus/es/components/table/src/util";
+import { mapState, mapActions } from "vuex";
 import { ref } from "vue";
+import moment from "moment";
 // import { useStore } from "vuex";
 // import { useRouter } from "vue-router";
-import axios from "axios";
 
-// const store = useStore();
-const checkList = "1시간";
+const studyStore = "studyStore";
 const multipleSelection = ref([]);
 
 export default {
   name: "UserSignup",
-  components: {},
+  computed: {
+    ...mapState(studyStore, ["isError", "studyID"]),
+  },
+
   methods: {
+    ...mapActions(studyStore, ["createConfirm"]),
+
+    async confirm() {
+      await this.createConfirm(this.studyFormInfo);
+    },
+
+    // 스터디 생성 폼 submit
+    submitForm() {
+      // 1. 빈칸이 없으면
+      console.log(this.studyFormInfo);
+      // 2. 날짜 제한이 맞으면
+      console.log(this.checkDate(this.studyFormInfo.studyDatetime));
+      // 통신
+      this.confirm();
+    },
+
+    // 날짜 선택 제한
+    checkDate(myDate) {
+      var t1 = moment(myDate, "YYYY-MM-DD HH:mm");
+      var t2 = moment();
+
+      console.log("날짜차이" + moment.duration(t2.diff(t1)).asDays());
+      console.log("시간차이" + moment.duration(t2.diff(t1)).asHours());
+
+      const diffDay = moment.duration(t2.diff(t1)).asDays();
+      const diffTime = moment.duration(t2.diff(t1)).asHours();
+
+      if (diffDay > -1 && diffTime > 0) return "24시간 이후로 선택해주세요";
+      if (diffDay > -1 && diffTime < 24) return "24시간 이후로 선택해주세요";
+      if (diffDay < -1 && diffTime < -24) return "올바른 날짜 선택입니다";
+    },
+    // 채점 템플릿 선택하기 버튼이벤트
+    showDialog() {
+      this.dialogVisible = true;
+      multipleSelection.value = []; // checked option 초기화
+    },
+    // 채점 템플릿 checked option
     handleSelectionChange(val) {
       multipleSelection.value = val;
-      console.log(multipleSelection.value);
+    },
+    setScoringList() {
+      multipleSelection.value.forEach((el) => {
+        console.log(el.type);
+        if (el.type == "태도") this.studyFormInfo.attitude = 1;
+        if (el.type == "직무역량") this.studyFormInfo.ability = 1;
+        if (el.type == "팀워크") this.studyFormInfo.teamwork = 1;
+        if (el.type == "기업이해도") this.studyFormInfo.solving = 1;
+        if (el.type == "태도") this.studyFormInfo.loyalty = 1;
+      });
+      this.dialogVisible = false;
     },
     // 채점표 템플릿 el-table 행열 병합
     objectSpanMethod({ rowIndex, columnIndex }) {
@@ -232,47 +281,31 @@ export default {
       }
       return "";
     },
-    setScoringList() {},
-
-    createStudy({ studyFormInfo }) {
-      axios
-        .post("/study", studyFormInfo, {
-          // headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
-        .then((res) => {
-          if (res === "SUCCESS") {
-            console.log("스터디 생성 FAIL");
-            // router.push({ name: "studylist", params: { studyID: res.data.data.id } });
-          } else {
-            console.log("스터디 생성 FAIL");
-          }
-        });
-      // .catch((err) => {});
-    },
-    submitForm() {
-      // createStudy(studyFormInfo);
-      console.log(this.studyFormInfo);
-    },
   },
+
   data() {
     return {
+      // 모달창 이벤트 변수
       dialogVisible: false,
+
       // 스터디 생성 정보
       studyFormInfo: [
         {
           title: "",
-          entfName: "",
-          deptName: "",
-          personnel: 0,
-          studyType: "",
-          date: "",
+          company: "",
+          job: "",
+          personnel: 1,
+          type: "",
+          studyDatetime: "",
           runningTime: 1,
-          scoringList: [],
-          desc: "",
+          content: "",
+          attitude: 0,
+          ability: 0,
+          teamwork: 0,
+          solving: 0,
+          loyalty: 0,
         },
       ],
-      checkList,
-      // 스터디 유형
       typeOptions: [
         {
           value: "일대다",
@@ -284,7 +317,7 @@ export default {
         },
       ],
       // 직군 유형
-      deptOptions: [
+      jobOptions: [
         {
           value: "연구직",
           label: "연구직",
@@ -313,27 +346,27 @@ export default {
       // 인원 수
       personnelOptions: [
         {
-          value: "1",
+          value: 1,
           label: "1",
         },
         {
-          value: "2",
+          value: 2,
           label: "2",
         },
         {
-          value: "3",
+          value: 3,
           label: "3",
         },
         {
-          value: "4",
+          value: 4,
           label: "4",
         },
         {
-          value: "5",
+          value: 5,
           label: "5",
         },
         {
-          value: "6",
+          value: 6,
           label: "6",
         },
       ],

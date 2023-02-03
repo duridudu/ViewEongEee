@@ -1,50 +1,55 @@
 // import router from "@/router";
 
-import { createStudy } from "@/api/study.js";
+import { createStudy, getAllStudy } from "@/api/study.js";
 
 const studyStore = {
   namespaced: true,
-  state: {},
-  getters: {
-    checkUserInfo: function (state) {
-      return state.userInfo;
-    },
+  state: {
+    isCreated: false,
+    studyId: 0,
   },
+  getters: {},
   mutations: {
-    SET_USER_INFO: (state, userInfo) => {
-      state.isLogin = true;
-      state.userInfo = userInfo;
+    SET_IS_SUCCESS: (state, isCreated) => {
+      state.isCreated = isCreated;
     },
-
-    CLEAR_USER_INFO: (state) => {
-      state.isLogin = false;
-      state.isLoginError = false;
-      state.userInfo = null;
-      state.isValidToken = false;
+    SET_STUDY_ID: (state, studyId) => {
+      state.studyId = studyId;
     },
   },
   actions: {
-    async userConfirm({ commit }, user) {
+    async createConfirm({ commit }, studyInfo) {
       await createStudy(
-        user,
-        ({ data }) => {
-          if (data.message === "success") {
-            let accessToken = data["accessToken"];
-            let refreshToken = data["refreshToken"];
-            // console.log("login success token created!!!! >> ", accessToken, refreshToken);
-            commit("SET_IS_LOGIN", true);
-            commit("SET_IS_LOGIN_ERROR", false);
-            commit("SET_IS_VALID_TOKEN", true);
-            sessionStorage.setItem("accessToken", accessToken);
-            sessionStorage.setItem("refreshToken", refreshToken);
-          } else {
-            commit("SET_IS_LOGIN", false);
-            commit("SET_IS_LOGIN_ERROR", true);
-            commit("SET_IS_VALID_TOKEN", false);
-          }
+        studyInfo,
+        (data) => {
+          console.log(data);
+          console.log(data.headers);
+          console.log(data.body);
+          commit("SET_STUDY_ID", data.body);
         },
-        (error) => {
-          console.log(error);
+        async (error) => {
+          // HttpStatus.UNAUTHORIZE(401) : RefreshToken 기간 만료 >> 다시 로그인!!!!
+          if (error.response.status === 401) {
+            console.log("401에러");
+            commit("SET_IS_SUCCESS", false);
+          }
+        }
+      );
+    },
+    async getList({ commit }) {
+      await getAllStudy(
+        (data) => {
+          console.log(data);
+          console.log(data.headers);
+          console.log(data.body);
+          commit("SET_STUDY_ID", data.body);
+        },
+        async (error) => {
+          // HttpStatus.UNAUTHORIZE(401) : RefreshToken 기간 만료 >> 다시 로그인!!!!
+          if (error.response.status === 401) {
+            console.log("401에러");
+            commit("SET_IS_SUCCESS", false);
+          }
         }
       );
     },

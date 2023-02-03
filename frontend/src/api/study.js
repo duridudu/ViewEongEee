@@ -2,11 +2,16 @@ import http from "./http.js";
 
 const api = http;
 
-async function studyCreate(user, success, fail) {
+async function createStudy(info, success, fail) {
+  api.defaults.headers["accessToken"] = sessionStorage.getItem("accessToken");
+
   await api
-    .post(`/users/signin`, JSON.stringify(user))
+    .post(`/users/study`, JSON.stringify(info))
     .then(success)
     .catch(fail);
 }
+async function getAllStudy(success, fail) {
+  await api.post(`/users/study`).then(success).catch(fail);
+}
 
-export { studyCreate };
+export { createStudy, getAllStudy };
