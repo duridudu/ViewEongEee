@@ -4,6 +4,7 @@ import com.ssafy.vieweongee.dto.user.request.PasswordCheckRequest;
 import com.ssafy.vieweongee.dto.user.request.UserCreateRequest;
 import com.ssafy.vieweongee.dto.user.request.UserModifyRequest;
 import com.ssafy.vieweongee.entity.User;
+import com.ssafy.vieweongee.exception.UserNotFoundException;
 import com.ssafy.vieweongee.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,3 +153,5 @@ public class UserServiceImpl implements UserService{
     }
 
 }
+
+

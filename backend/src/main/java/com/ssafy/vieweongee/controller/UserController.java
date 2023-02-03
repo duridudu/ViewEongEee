@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     UserService userService;
@@ -38,9 +38,8 @@ public class UserController {
     @ResponseBody
     @PostMapping("/signin")
     public ResponseEntity login(@RequestBody User user) {
-        log.info("나 로그인하러 왔옹 : {}", user.getEmail());
-
-        log.info("여긴 유저 컨트롤러.. 유저 이메일은 {} 유저 프로바이더는 : {}", user.getEmail(), "global");
+//        log.info("나 로그인하러 왔옹 : {}", user.getEmail());
+//        log.info("여긴 유저 컨트롤러.. 유저 이메일은 {} 유저 프로바이더는 : {}", user.getEmail(), "global");
 
         User loginUser = userService.login(user);
         if(loginUser != null){
@@ -51,21 +50,13 @@ public class UserController {
             log.info("리프레쉬 앤 엑세스 : {} // {}", refreshToken, accessToken);
             tokenService.setRefreshToken(userId,refreshToken);
 
-//            List<String> tokens=new ArrayList<>();
-
-//            tokens.add(accessToken);
-//            tokens.add(refreshToken);
-
             HttpHeaders headers = new HttpHeaders();
             headers.add("ACCESS", accessToken);
             headers.add("REFRESH", refreshToken);
-//           String message="SUCCESS";
-//           response.addHeader("ACCESS", accessToken);
-//           response.addHeader("REFRESH", refreshToken);
 
             return ResponseEntity.ok().headers(headers).body("SUCCESS");
         }
-        return ResponseEntity.status(400).body("login fail");
+        return ResponseEntity.status(400).body("FAIL");
     }
 
     //회원 가입
@@ -99,19 +90,18 @@ public class UserController {
         return ResponseEntity.status(409).body("이메일이 중복됩니다. 다른 이메일을 선택해 주세요");
     }
 
-    //    인증 이메일 발송
+    //  인증 이메일 발송
     @PostMapping("/email-valid")
     public ResponseEntity<?> sendEmail(@RequestBody String email) {
         try {
-//            String code = emailService.s
             String code = emailService.sendSimpleMessage(email, "code");
             Map<String, String> result = new HashMap<>();
             result.put("data", code);
-            result.put("message", "이메일 보내기 성공");
+            result.put("message", "SUCCESS");
             return ResponseEntity.status(200).body(result);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("이메일 보내기 실패");
+            return ResponseEntity.status(500).body("FAIL");
         }
     }
 

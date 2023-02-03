@@ -17,12 +17,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry reg){
         reg.addInterceptor(new JwtFilter(tokenService, objectMapper))
                 .order(1)
-                .addPathPatterns("/api/users/signout");
+                .addPathPatterns("/users/signout", "/study/","/study/{study_id}");
 
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
-    }
 }
