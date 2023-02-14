@@ -3,15 +3,12 @@ import http from "./http.js";
 const api = http;
 
 async function signin(user, success, fail) {
-  await api
-    .post(`/users/signin`, JSON.stringify(user))
-    .then(success)
-    .catch(fail);
+  await api.post(`/users/signin`, JSON.stringify(user)).then(success).catch(fail);
 }
 
 async function findByEmail(email, success, fail) {
   // async function findById(myemail, success, fail) {
-  // api.defaults.headers["ACCESS"] = sessionStorage.getItem("ACCESS");
+  api.defaults.headers["ACCESS"] = sessionStorage.getItem("ACCESS");
   await api
     .get(`/users/email-check/` + email)
     .then(success)
@@ -21,10 +18,7 @@ async function findByEmail(email, success, fail) {
 
 async function getCode(email, success, fail) {
   // async function findById(myemail, success, fail) {
-  await api
-    .get(`/users/email-valid/` + email)
-    .then(success)
-    .catch(fail);
+  await api.get(`/users/email-valid/`+ email).then(success).catch(fail);
   // await api.get(`/users/email-check`).then(success).catch(fail);
 }
 
@@ -43,17 +37,14 @@ async function signout(obj, success, fail) {
 }
 
 async function update(user, success, fail) {
-  console.log("users : " + JSON.stringify(user));
+  console.log("users : " + JSON.stringify(user))
   api.defaults.headers["ACCESS"] = sessionStorage.getItem("ACCESS");
   await api.put(`/users/`, JSON.stringify(user)).then(success).catch(fail);
 }
 
 async function signup(user, success, fail) {
   console.log("users : " + JSON.stringify(user));
-  await api
-    .post(`/users/signup`, JSON.stringify(user))
-    .then(success)
-    .catch(fail);
+  await api.post(`/users/signup`, JSON.stringify(user)).then(success).catch(fail);
 }
 
 // async function preDeleteUser(userid, success, fail){
@@ -61,21 +52,9 @@ async function signup(user, success, fail) {
 // }
 
 async function deleteUser(password, success, fail) {
-  console.log("비번 : " + password);
+  // console.log("비번 : " + password);
   api.defaults.headers["ACCESS"] = sessionStorage.getItem("ACCESS");
-  await api
-    .delete(`/users/` + password)
-    .then(success)
-    .catch(fail);
+  await api.delete(`/users/` + password).then(success).catch(fail);
 }
 
-export {
-  signin,
-  findByEmail,
-  getCode,
-  tokenRegeneration,
-  signout,
-  update,
-  signup,
-  deleteUser,
-};
+export { signin, findByEmail, getCode, tokenRegeneration, signout, update, signup, deleteUser };
